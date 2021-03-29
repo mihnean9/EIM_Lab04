@@ -3,4 +3,5 @@
 
     <string name="show_additional">Show Additional Fields</string>
     <string name="hide_additional">Hide Additional Fields</string>
+    <string name="phone_error">No Phone Number Provided!</string>
 </resources>

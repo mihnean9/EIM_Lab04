@@ -1,12 +1,13 @@
 package lab03.eim.systems.cs.pub.contactsmanager
 
-import android.R.attr.name
 import android.content.ContentValues
 import android.content.Intent
 import android.os.Bundle
 import android.provider.ContactsContract
+import android.provider.SyncStateContract.Constants
 import android.view.View
 import android.widget.Button
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import lab03.eim.systems.cs.pub.contactsmanager.databinding.ActivityContactsManagerBinding
@@ -16,11 +17,23 @@ import java.util.*
 class ContactsManagerActivity : AppCompatActivity() {
 
     lateinit var binding: ActivityContactsManagerBinding
+    val CONTACTS_MANAGER_REQUEST_CODE = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityContactsManagerBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        val intent = intent
+        if (intent != null) {
+            val phone =
+                intent.getStringExtra("ro.pub.cs.systems.eim.lab04.contactsmanager.PHONE_NUMBER_KEY")
+            if (phone != null) {
+                binding.textPhone.setText(phone)
+            } else {
+                Toast.makeText(this, resources.getString(R.string.phone_error), Toast.LENGTH_LONG)
+                    .show()
+            }
+        }
     }
 
     fun changeVisibilityOfAdditionalFields(view: View) {
@@ -84,8 +97,18 @@ class ContactsManagerActivity : AppCompatActivity() {
             contactData.add(imRow)
         }
         intent.putParcelableArrayListExtra(ContactsContract.Intents.Insert.DATA, contactData)
-        startActivity(intent)
+        startActivityForResult(intent, CONTACTS_MANAGER_REQUEST_CODE);
     }
 
     fun cancel(view: View) = finish()
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
+        super.onActivityResult(requestCode, resultCode, intent)
+        when (requestCode) {
+            CONTACTS_MANAGER_REQUEST_CODE -> {
+                setResult(resultCode, Intent())
+                finish()
+            }
+        }
+    }
 }
